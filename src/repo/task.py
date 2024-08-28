@@ -6,13 +6,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.models import User, UserTask, Task
 
 
-class UserRepo:
+class TaskRepo:
 
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def all(self) -> Sequence[User]:
-        return (await self.session.scalars(select(User).filter(User.fio != 'FIO'))).all()
+    async def all(self) -> Sequence[Task]:
+        return (await self.session.scalars(select(Task))).all()
 
     async def get_by_tg(self, tg_id: int) -> User | None:
         return await self.session.scalar(select(User).filter(User.tg_id == tg_id))
@@ -24,7 +24,7 @@ class UserRepo:
         )
 
         self.session.add(user)
-        self.session.add_all([UserTask(user_id=user.tg_id, task_id=task.id) for task in tasks])
+        self.session.add_all([UserTask(user.tg_id, task.id) for task in tasks])
 
         await self.session.commit()
         return user

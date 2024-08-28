@@ -24,8 +24,9 @@ class GetUserMiddleware(BaseMiddleware):
         user = await db.user.get_by_tg(event.from_user.id)
         if not user:
             user = await db.user.create(
-                telegram_id=event.from_user.id,
+                tg_id=event.from_user.id,
                 tg_username=event.from_user.username,
+                tasks=await db.task.all(),
             )
         elif user.tg_username != event.from_user.username:
             await db.user.update(user, tg_username=event.from_user.username)

@@ -39,17 +39,8 @@ class UserTask(Base):
     user = relationship('User', back_populates='user_tasks')
 
     id = Column(Integer, primary_key=True)
-    photo_file_id = Column(String)
-    address = Column(String)
-    description = Column(String)
-    question = Column(String)
 
-    clue1 = Column(String)
-    clue2 = Column(String)
-
-    answers = Column(String)
-
-    is_done = Column(Boolean)
+    is_done = Column(Boolean, default=False)
 
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
