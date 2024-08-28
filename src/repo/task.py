@@ -1,6 +1,6 @@
 from typing import Sequence
 
-from sqlalchemy import select
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models import User, UserTask, Task
@@ -14,24 +14,18 @@ class TaskRepo:
     async def all(self) -> Sequence[Task]:
         return (await self.session.scalars(select(Task))).all()
 
-    async def get_by_tg(self, tg_id: int) -> User | None:
-        return await self.session.scalar(select(User).filter(User.tg_id == tg_id))
-
-    async def create(self, tg_id: int, tg_username: str | None, tasks: list[Task]) -> User:
-        user = User(
-            tg_id=tg_id,
-            tg_username=tg_username,
+    async def get_next(self, tg_id: int) -> Task | None:
+        return await self.session.scalar(
+            select(Task)
+            .join(UserTask, UserTask.task_id == Task.id)
+            .filter(and_(UserTask.user_id == tg_id, UserTask.is_done == False))
+            .order_by(UserTask.id)
+            .limit(1)
         )
 
-        self.session.add(user)
-        self.session.add_all([UserTask(user.tg_id, task.id) for task in tasks])
-
-        await self.session.commit()
-        return user
-
-    async def update(self, user: User, **kwargs) -> User:
+    async def update(self, task: Task, **kwargs) -> Task:
         for k, v in kwargs.items():
-            setattr(user, k, v)
+            setattr(task, k, v)
 
         await self.session.commit()
-        return user
+        return task

@@ -6,6 +6,10 @@ class StartTaskCallbackData(CallbackData, prefix='task_start'):
     ...
 
 
+class NextTaskCallbackData(CallbackData, prefix='task_next'):
+    ...
+
+
 start_task_keyboard = InlineKeyboardMarkup(inline_keyboard=[
     [
         InlineKeyboardButton(text='Я на месте', callback_data=StartTaskCallbackData().pack()),
@@ -14,6 +18,6 @@ start_task_keyboard = InlineKeyboardMarkup(inline_keyboard=[
 
 start_quest_keyboard = InlineKeyboardMarkup(inline_keyboard=[
     [
-        InlineKeyboardButton(text='Начать квест', callback_data=StartTaskCallbackData().pack()),
+        InlineKeyboardButton(text='Начать квест', callback_data=NextTaskCallbackData().pack()),
     ],
 ])

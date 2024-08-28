@@ -3,12 +3,14 @@ import logging
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.client.default import DefaultBotProperties
+from aiogram.types import FSInputFile
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from config import Config, load_config
 from src.handlers import routers
 from src.middlewares import DbSessionMiddleware, GetUserMiddleware
 from src.models import Base
+from src.repo import DB
 from src.services import do_backup
 
 logger = logging.getLogger(__name__)
@@ -39,6 +41,18 @@ async def main():
 
     dp.include_routers(*routers)
     dp.update.middleware(DbSessionMiddleware(session_pool=sessionmaker, config=config))
+
+    # async with sessionmaker() as session:
+    #     db = DB(session)
+    #
+    #     tasks = await db.task.all()
+    #
+    #     for task in tasks:
+    #         m1 = await bot.send_photo(config.backup_channel_id, FSInputFile(f'media/{task.photo_filename}'))
+    #         m2 = await bot.send_video(config.backup_channel_id, FSInputFile(f'media/{task.video_filename}'))
+    #
+    #         await db.task.update(task, photo_file_id=m1.photo[-1].file_id, video_file_id=m2.video.file_id)
+
     dp.message.outer_middleware(GetUserMiddleware())
     dp.callback_query.outer_middleware(GetUserMiddleware())
 

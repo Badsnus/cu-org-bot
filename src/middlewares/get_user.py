@@ -1,3 +1,4 @@
+import random
 from typing import Callable, Awaitable, Dict, Any
 
 from aiogram import BaseMiddleware, Bot
@@ -23,10 +24,12 @@ class GetUserMiddleware(BaseMiddleware):
 
         user = await db.user.get_by_tg(event.from_user.id)
         if not user:
+            tasks = await db.task.all()
+            random.shuffle(tasks)
             user = await db.user.create(
                 tg_id=event.from_user.id,
                 tg_username=event.from_user.username,
-                tasks=await db.task.all(),
+                tasks=tasks,
             )
         elif user.tg_username != event.from_user.username:
             await db.user.update(user, tg_username=event.from_user.username)
