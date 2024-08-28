@@ -37,9 +37,6 @@ async def main():
     )
     dp: Dispatcher = Dispatcher()
 
-    x = await bot.send_photo(config.backup_channel_id, types.FSInputFile('media/tasks.jpg'))
-    config.tasks_photo_file_id = x.photo[-1].file_id
-
     dp.include_routers(*routers)
     dp.update.middleware(DbSessionMiddleware(session_pool=sessionmaker, config=config))
     dp.message.outer_middleware(GetUserMiddleware())
