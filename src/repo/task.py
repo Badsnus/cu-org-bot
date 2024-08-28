@@ -1,6 +1,6 @@
 from typing import Sequence
 
-from sqlalchemy import and_, select
+from sqlalchemy import and_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models import User, UserTask, Task
@@ -29,3 +29,11 @@ class TaskRepo:
 
         await self.session.commit()
         return task
+
+    async def set_task_is_done(self, user_id: int, task_id: int) -> None:
+        await self.session.execute(
+            update(UserTask)
+            .filter(and_(UserTask.user_id == user_id, UserTask.task_id == task_id))
+            .values(is_done=True)
+        )
+        await self.session.commit()

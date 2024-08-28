@@ -21,3 +21,8 @@ start_quest_keyboard = InlineKeyboardMarkup(inline_keyboard=[
         InlineKeyboardButton(text='Начать квест', callback_data=NextTaskCallbackData().pack()),
     ],
 ])
+go_to_next_task_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+    [
+        InlineKeyboardButton(text='ГОУ ТУ НЕКСТ ТОЧКА', callback_data=NextTaskCallbackData().pack()),
+    ],
+])
