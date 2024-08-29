@@ -14,7 +14,7 @@ router = Router()
 
 
 def get_quest_end_text():
-    return 'Вы закончили квест'
+    return 'Поздравляем, ты прошел все локации. Надеюсь, нам удалось показать, что город — это не только пространство, но и история, разнообразные контексты и ценности. Ждём тебя на нашем курсе, где мы продолжим заново открывать Россию'
 
 
 async def send_go_to_next_task_message(message: types.Message, text: str, photo: str) -> None:
@@ -84,7 +84,7 @@ async def validate_answer(message: types.Message, db: DB, state: FSMContext) -> 
         await send_go_to_next_task_message(
             message,
             'Поздравляю - это правильный ответ!\n\n'
-            f'<b>Ответ: {answers[0]}</b>\n'
+            f'<b>Ответ: {answers[0].upper()}</b>\n'
             f'{task.description}',
             task.answer_photo_file_id,
         )
@@ -96,7 +96,8 @@ async def validate_answer(message: types.Message, db: DB, state: FSMContext) -> 
     if attempt < 3:
         clues = [task.clue1, task.clue2]
         await message.answer(
-            f'Увы, это неправильный ответ(((\nВот тебе подсказка: <code>{clues[attempt - 1]}</code>\n\nПиши ответ ниже 👇'
+            f'Увы, это неправильный ответ(((\n\n<b>Вот тебе подсказка:</b>\n<i>{clues[attempt - 1]}</i>'
+            f'\n\nПиши ответ ниже 👇'
         )
         await state.update_data(attempt=attempt + 1)
         return
@@ -106,7 +107,7 @@ async def validate_answer(message: types.Message, db: DB, state: FSMContext) -> 
     await send_go_to_next_task_message(
         message,
         f'У тебя почти получилось!\n\n'
-        f'<b>Ответ: {answers[0]}</b>\n'
+        f'<b>Ответ: {answers[0].upper()}</b>\n'
         f'{task.description}',
         task.answer_photo_file_id,
     )
