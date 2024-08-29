@@ -57,7 +57,10 @@ async def start_task(call: types.CallbackQuery, db: DB, state: FSMContext) -> No
     await state.update_data(
         attempt=1,
     )
-    await call.message.edit_reply_markup()
+    try:
+        await call.message.edit_reply_markup()
+    except:
+        pass
     await call.message.answer_video(
         video=task.video_file_id,
         caption=f'{task.question}\n\n'
