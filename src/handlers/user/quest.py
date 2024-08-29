@@ -17,19 +17,18 @@ def get_quest_end_text():
     return 'Вы закончили квест'
 
 
-async def send_go_to_next_task_message(message: types.Message, text: str) -> None:
-    await message.answer(
-        text,
+async def send_go_to_next_task_message(message: types.Message, text: str, photo: str) -> None:
+    await message.answer_photo(
+        photo=photo,
+        caption=text,
         reply_markup=go_to_next_task_keyboard,
     )
 
 
 @router.callback_query(NextTaskCallbackData.filter())
 async def show_new_task(call: types.CallbackQuery, db: DB) -> None:
-    try:
-        await call.message.delete()
-    except:
-        pass
+    await call.message.edit_reply_markup()
+
     task = await db.task.get_next(call.from_user.id)
 
     if task is None:
@@ -38,8 +37,7 @@ async def show_new_task(call: types.CallbackQuery, db: DB) -> None:
 
     await call.message.answer_photo(
         photo=task.photo_file_id,
-        caption=f'{task.description}\n'
-                f'Твой следующий адрес: <code>{task.address}</code>',
+        caption=f'<b>Твой следующий адрес:</b>\n<code>{task.address}</code>',
         reply_markup=start_task_keyboard,
     )
 
@@ -62,8 +60,8 @@ async def start_task(call: types.CallbackQuery, db: DB, state: FSMContext) -> No
     await call.message.edit_reply_markup()
     await call.message.answer_video(
         video=task.video_file_id,
-        caption=f'А вот и вопрос, на который тебе нужно ответить: {task.question}\n\n'
-                f'Пиши ответ ниже 👇',
+        caption=f'{task.question}\n\n'
+                f'<b>Пиши свой ответ 👇</b>',
     )
 
     await state.set_state(QuestionState.answer)
@@ -78,14 +76,18 @@ async def validate_answer(message: types.Message, db: DB, state: FSMContext) -> 
         await state.clear()
         return
 
-    answer = message.text
+    answer = message.text.lower()
     answers = task.answers.split(';')
     if answer in answers:
         await db.task.set_task_is_done(task_id=task.id, user_id=message.from_user.id)
         await state.clear()
-        await send_go_to_next_task_message(message,
-                                           'Поздравляю - это правильный ответ!\n'
-                                           'Быстрее переходи к следующему заданию')
+        await send_go_to_next_task_message(
+            message,
+            'Поздравляю - это правильный ответ!\n\n'
+            f'<b>Ответ: {answers[0]}</b>\n'
+            f'{task.description}',
+            task.answer_photo_file_id,
+        )
         return
 
     data = await state.get_data()
@@ -103,6 +105,8 @@ async def validate_answer(message: types.Message, db: DB, state: FSMContext) -> 
     await state.clear()
     await send_go_to_next_task_message(
         message,
-        f'Увы, ты не смог правильно ответить - правильный ответ был: {answers[0]}\n'
-        f'<b>Но не расстраивайся - дальше тебя ждет еще больше крутых локаций!</b>',
+        f'У тебя почти получилось!\n\n'
+        f'<b>Ответ: {answers[0]}</b>\n'
+        f'{task.description}',
+        task.answer_photo_file_id,
     )

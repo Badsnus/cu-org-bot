@@ -25,6 +25,9 @@ class Task(Base):
     clue2 = Column(String)
 
     answers = Column(String)
+    answer_description = Column(String)
+    answer_photo_filename = Column(String)
+    answer_photo_file_id = Column(String)
 
     user_tasks = relationship('UserTask', back_populates='task')
 
