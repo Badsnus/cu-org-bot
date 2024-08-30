@@ -9,4 +9,4 @@ services:
       - .env
     command: ["python", "./bot.py"]
     volumes:
-      - /root/cu_game/main.db:/app/main.db
+      - /root/cu-org-bot/main.db:/app/main.db
