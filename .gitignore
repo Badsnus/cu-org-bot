@@ -179,5 +179,3 @@ qrs/item/*
 !qrs/item/
 
 run_tests.py
-
-main.db
