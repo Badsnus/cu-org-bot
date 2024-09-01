@@ -6,6 +6,11 @@ from src.keyboards.start_task import start_quest_keyboard
 router = Router()
 
 
+# @router.message()
+# async def gg(message: types.Message):
+#     print(message.video.file_id)
+
+
 @router.message(CommandStart())
 async def start(message: types.Message) -> None:
     await message.answer(
