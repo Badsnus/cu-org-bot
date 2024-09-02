@@ -43,20 +43,20 @@ async def main():
     dp.update.middleware(DbSessionMiddleware(session_pool=sessionmaker, config=config))
 
     # async with sessionmaker() as session:
-        # db = DB(session)
-        #
-        # tasks = await db.task.all()
-        #
-        # for task in tasks:
-        #     m1 = await bot.send_photo(config.backup_channel_id, FSInputFile(f'media/{task.photo_filename}'))
-        #     #m2 = await bot.send_video(config.backup_channel_id, FSInputFile(f'media/{task.video_filename}'))
-        #     m3 = await bot.send_photo(config.backup_channel_id, FSInputFile(f'media/{task.answer_photo_filename}'))
-        #     await db.task.update(
-        #         task,
-        #         photo_file_id=m1.photo[-1].file_id,
-        #      #   video_file_id=m2.video.file_id,
-        #         answer_photo_file_id=m3.photo[-1].file_id,
-        #     )
+    #     db = DB(session)
+    #
+    #     tasks = await db.task.all()
+    #
+    #     for task in tasks:
+    #         m1 = await bot.send_photo(config.backup_channel_id, FSInputFile(f'media/{task.photo_filename}'))
+    #         # m2 = await bot.send_video(config.backup_channel_id, FSInputFile(f'media/{task.video_filename}'))
+    #         # m3 = await bot.send_photo(config.backup_channel_id, FSInputFile(f'media/{task.answer_photo_filename}'))
+    #         await db.task.update(
+    #             task,
+    #             photo_file_id=m1.photo[-1].file_id,
+    #             #   video_file_id=m2.video.file_id,
+    #             # answer_photo_file_id=m3.photo[-1].file_id,
+    #         )
 
     dp.message.outer_middleware(GetUserMiddleware())
     dp.callback_query.outer_middleware(GetUserMiddleware())

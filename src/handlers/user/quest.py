@@ -20,6 +20,16 @@ def get_quest_end_text():
 VIDEO_FILE_ID = 'BAACAgIAAxkBAAIDaGbUKZywat32hT4Ur5X4JN6HqCT9AAKaSgACzVGhSvH81Z6sk9-oNQQ'
 
 
+async def send_last_message(message: types.Message) -> None:
+    await message.answer_video(caption=get_quest_end_text(),
+                               video=VIDEO_FILE_ID)
+
+    await message.answer_video(
+        caption='<b>Благодарим Антона Балова за помощь в разработке бота!</b>',
+        video='BAACAgIAAxkBAAIDyGbVXrOWGc1pouIRyW50vP4XheDMAAL4XQAC-5p5SnwPSKzWiHYAATUE',
+    )
+
+
 async def send_go_to_next_task_message(message: types.Message, text: str, photo: str) -> None:
     await message.answer_photo(
         photo=photo,
@@ -35,8 +45,7 @@ async def show_new_task(call: types.CallbackQuery, db: DB) -> None:
     task = await db.task.get_next(call.from_user.id)
 
     if task is None:
-        await call.message.answer_video(caption=get_quest_end_text(),
-                                        video=VIDEO_FILE_ID)
+        await send_last_message(message=call.message)
         return
 
     await call.message.answer_photo(
@@ -55,8 +64,7 @@ async def start_task(call: types.CallbackQuery, db: DB, state: FSMContext) -> No
             await call.message.delete()
         except:
             pass
-        await call.message.answer_video(caption=get_quest_end_text(),
-                                        video=VIDEO_FILE_ID)
+        await send_last_message(message=call.message)
         return
 
     await state.update_data(
@@ -80,8 +88,8 @@ async def validate_answer(message: types.Message, db: DB, state: FSMContext) -> 
     task = await db.task.get_next(message.from_user.id)
 
     if task is None:
-        await message.answer_video(caption=get_quest_end_text(),
-                                   video=VIDEO_FILE_ID)
+        await send_last_message(message)
+
         await state.clear()
         return
 

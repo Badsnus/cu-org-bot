@@ -10,9 +10,19 @@ class NextTaskCallbackData(CallbackData, prefix='task_next'):
     ...
 
 
+class NextStartMessageCallbackData(CallbackData, prefix='start_next'):
+    ...
+
+
 start_task_keyboard = InlineKeyboardMarkup(inline_keyboard=[
     [
         InlineKeyboardButton(text='Я на месте', callback_data=StartTaskCallbackData().pack()),
+    ],
+])
+
+go_to_next_start_message = InlineKeyboardMarkup(inline_keyboard=[
+    [
+        InlineKeyboardButton(text='Погнали', callback_data=NextStartMessageCallbackData().pack()),
     ],
 ])
 
